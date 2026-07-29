@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="h-full bg-zinc-50">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>الميزانية السنوية — ميزان</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config={theme:{extend:{fontFamily:{sans:['Cairo','sans-serif']}}}}</script>
+    
+</head>
+<body class="h-full font-sans text-zinc-900 antialiased flex overflow-hidden" data-page="budget">
+
+    <aside id="appSidebar" class="w-64 bg-white border-l border-zinc-200 flex-shrink-0 h-full flex flex-col
+         fixed md:relative right-0 top-0 z-50 transform translate-x-full md:translate-x-0 transition-transform duration-200">
+        <div class="h-14 flex items-center px-6 border-b border-zinc-200">
+            <div class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-900 text-white ml-2">
+                <i class="bi bi-pie-chart-fill text-sm"></i>
+            </div>
+            <span class="font-semibold text-zinc-900">ميزان</span>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+            <a href="index.html" data-page="dashboard" class="nav-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-zinc-600 hover:bg-zinc-100">
+                <i class="bi bi-speedometer2"></i>
+                <span>لوحة التحكم</span>
+            </a>
+            <a href="budget.html" data-page="budget" class="nav-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-zinc-600 hover:bg-zinc-100">
+                <i class="bi bi-wallet2"></i>
+                <span>الميزانية السنوية</span>
+            </a>
+            <a href="transactions.html" data-page="transactions" class="nav-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-zinc-600 hover:bg-zinc-100">
+                <i class="bi bi-arrow-left-right"></i>
+                <span>المعاملات</span>
+            </a>
+            <a href="accounts.html" data-page="accounts" class="nav-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-zinc-600 hover:bg-zinc-100">
+                <i class="bi bi-bank"></i>
+                <span>الحسابات البنكية</span>
+            </a>
+            <a href="reconciliation.html" data-page="reconciliation" class="nav-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-zinc-600 hover:bg-zinc-100">
+                <i class="bi bi-check2-square"></i>
+                <span>المطابقة</span>
+            </a>
+            <a href="users.html" data-page="users" class="nav-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-zinc-600 hover:bg-zinc-100 owner-only">
+                <i class="bi bi-people"></i>
+                <span>المستخدمين</span>
+            </a>
+            <a href="reports.html" data-page="reports" class="nav-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-zinc-600 hover:bg-zinc-100">
+                <i class="bi bi-file-earmark-pdf"></i>
+                <span>التقارير</span>
+            </a>
+        </nav>
+
+        <div class="border-t border-zinc-200 p-4">
+            <div class="flex items-center gap-3 mb-3">
+                <div id="avatarBadge" class="w-8 h-8 rounded-full bg-zinc-200 flex items-center justify-center text-zinc-600 text-xs font-bold">م</div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-zinc-900 truncate">مستخدم تجريبي</p>
+                    <p id="roleLabel" class="text-xs text-zinc-400">مالك</p>
+                </div>
+            </div>
+            <button class="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>تسجيل الخروج</span>
+            </button>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-full overflow-hidden">
+        <header class="h-14 bg-white border-b border-zinc-200 flex items-center px-6 z-10 flex-shrink-0 gap-4">
+            <button id="sidebarToggler" class="md:hidden text-zinc-500 hover:text-zinc-900 p-1 rounded hover:bg-zinc-100">
+                <i class="bi bi-list text-xl"></i>
+            </button>
+            <nav aria-label="breadcrumb">
+                <ol class="flex items-center gap-2 text-xs font-medium text-zinc-400 list-none p-0 m-0">
+                    <li>ميزان</li>
+                    <li><i class="bi bi-chevron-left text-[10px]"></i></li>
+                    <li class="text-zinc-900">الميزانية السنوية</li>
+                </ol>
+            </nav>
+
+            <div class="mr-auto flex items-center gap-3">
+                <span class="text-xs text-zinc-400 hidden md:block">عرض النموذج كـ:</span>
+                <select id="roleSwitcher" class="text-xs border border-zinc-200 rounded-lg px-2 py-1.5 text-zinc-700 bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-300 cursor-pointer">
+                    <option value="owner">مالك (Owner)</option>
+                    <option value="editor">محرر (Editor)</option>
+                    <option value="viewer">مشاهد (Viewer)</option>
+                </select>
+
+                <div class="relative" id="bellWrap">
+                    <button id="bellBtn" class="relative p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg">
+                        <i class="bi bi-bell text-lg"></i>
+                        <span class="absolute -top-0.5 -left-0.5 min-w-[18px] h-[18px] text-[10px] font-bold bg-red-500 text-white rounded-full flex items-center justify-center px-1">3</span>
+                    </button>
+                    <div id="bellPanel" class="hidden absolute left-0 mt-2 w-72 bg-white border border-zinc-200 rounded-lg shadow-lg z-50">
+                        <div class="px-4 py-3 border-b border-zinc-100 text-sm font-semibold text-zinc-900">الإشعارات</div>
+                        <div class="divide-y divide-zinc-50 text-xs">
+                            <div class="px-4 py-3 hover:bg-zinc-50">
+                                <p class="font-medium text-zinc-800">تأخر تحصيل إيراد "الازدهار"</p>
+                                <p class="text-zinc-400 mt-0.5">منذ يومين</p>
+                            </div>
+                            <div class="px-4 py-3 hover:bg-zinc-50">
+                                <p class="font-medium text-zinc-800">فرق مطابقة في حساب الادخار</p>
+                                <p class="text-zinc-400 mt-0.5">منذ 3 أيام</p>
+                            </div>
+                            <div class="px-4 py-3 hover:bg-zinc-50">
+                                <p class="font-medium text-zinc-800">تمت إضافة مستخدم جديد بصلاحية مشاهد</p>
+                                <p class="text-zinc-400 mt-0.5">منذ أسبوع</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="viewerBanner" class="hidden px-6 pt-4">
+            <div class="bg-amber-50 border border-amber-200 text-amber-800 text-xs px-4 py-2.5 rounded-lg flex items-center gap-2">
+                <i class="bi bi-eye"></i>
+                أنت تتصفح بصلاحية "مشاهدة فقط" — يمكنك استعراض كل الأرقام والتقارير، لكن لا يمكنك الإضافة أو التعديل أو الحذف.
+            </div>
+        </div>
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto p-6 lg:p-8">
+            <div class="max-w-6xl mx-auto">
+
+                <div class="flex items-center justify-between mb-6">
+                    <h1 class="text-lg font-bold text-zinc-900">الميزانية السنوية 2026 — المتوقع مقابل الفعلي</h1>
+                    <button onclick="showToast('تم فتح نموذج إضافة بند (تجريبي)')" class="owner-editor-only inline-flex items-center gap-2 bg-zinc-900 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-zinc-800">
+                        <i class="bi bi-plus-lg"></i> إضافة بند
+                    </button>
+                </div>
+
+                <div class="card overflow-hidden mb-6">
+                    <div class="px-6 py-4 border-b border-zinc-100 bg-zinc-50/50">
+                        <h3 class="font-semibold text-sm text-emerald-700 flex items-center gap-2"><i class="bi bi-arrow-down-circle"></i> الإيرادات</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-zinc-50 border-b border-zinc-200">
+                                <tr class="text-zinc-500 text-xs uppercase tracking-wide">
+                                    <th class="text-right font-medium px-4 py-3">البند</th>
+                                    <th class="text-right font-medium px-4 py-3">المتوقع</th>
+                                    <th class="text-right font-medium px-4 py-3">الفعلي</th>
+                                    <th class="text-right font-medium px-4 py-3">نسبة الإنجاز</th>
+                                    <th class="text-right font-medium px-4 py-3">المتأخرات</th>
+                                    <th class="text-right font-medium px-4 py-3">ملاحظات</th>
+                                    <th class="text-right font-medium px-4 py-3 owner-editor-only">إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-100" id="incomeBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card overflow-hidden mb-6">
+                    <div class="px-6 py-4 border-b border-zinc-100 bg-zinc-50/50">
+                        <h3 class="font-semibold text-sm text-red-700 flex items-center gap-2"><i class="bi bi-arrow-up-circle"></i> المصروفات</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-zinc-50 border-b border-zinc-200">
+                                <tr class="text-zinc-500 text-xs uppercase tracking-wide">
+                                    <th class="text-right font-medium px-4 py-3">البند</th>
+                                    <th class="text-right font-medium px-4 py-3">المتوقع</th>
+                                    <th class="text-right font-medium px-4 py-3">الفعلي</th>
+                                    <th class="text-right font-medium px-4 py-3">نسبة الإنجاز</th>
+                                    <th class="text-right font-medium px-4 py-3">ملاحظات</th>
+                                    <th class="text-right font-medium px-4 py-3 owner-editor-only">إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-100" id="expenseBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card overflow-hidden">
+                    <div class="px-6 py-4 border-b border-zinc-100 bg-zinc-50/50">
+                        <h3 class="font-semibold text-sm flex items-center gap-2"><i class="bi bi-bar-chart-steps text-zinc-600"></i> الإيرادات: المتوقع مقابل الفعلي لكل بند</h3>
+                    </div>
+                    <div class="p-6" style="height: 320px;">
+                        <canvas id="budgetVsActualChart"></canvas>
+                    </div>
+                </div>
+
+                <script>
+                    function progressBadge(rate) {
+                        const pct = (rate * 100).toFixed(0) + '%';
+                        let cls = 'badge-danger';
+                        if (rate >= 0.7) cls = 'badge-success';
+                        else if (rate >= 0.35) cls = 'badge-warning';
+                        return `<span class="badge ${cls}">${pct}</span>`;
+                    }
+                    function actionCell() {
+                        return `<td class="px-4 py-3 owner-editor-only">
+                            <div class="flex items-center gap-2">
+                                <button onclick="showToast('تم فتح نموذج تعديل البند (تجريبي)')" class="text-zinc-400 hover:text-zinc-900"><i class="bi bi-pencil"></i></button>
+                            </div>
+                        </td>`;
+                    }
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const d = window.APP_DATA.budget;
+                        document.getElementById('incomeBody').innerHTML = d.income.map(r => {
+                            const rate = r.expected ? r.actual / r.expected : 0;
+                            return `<tr class="hover:bg-zinc-50">
+                                <td class="px-4 py-3 font-medium">${r.item}</td>
+                                <td class="px-4 py-3 text-zinc-500">${formatMoney(r.expected)}</td>
+                                <td class="px-4 py-3 font-medium">${formatMoney(r.actual)}</td>
+                                <td class="px-4 py-3">${progressBadge(rate)}</td>
+                                <td class="px-4 py-3 text-amber-700">${formatMoney(r.overdue)}</td>
+                                <td class="px-4 py-3 text-zinc-400 text-xs">${r.notes || '—'}</td>
+                                ${actionCell()}
+                            </tr>`;
+                        }).join('');
+
+                        document.getElementById('expenseBody').innerHTML = d.expense.map(r => {
+                            const rate = r.expected ? r.actual / r.expected : 0;
+                            return `<tr class="hover:bg-zinc-50">
+                                <td class="px-4 py-3 font-medium">${r.item}</td>
+                                <td class="px-4 py-3 text-zinc-500">${formatMoney(r.expected)}</td>
+                                <td class="px-4 py-3 font-medium">${formatMoney(r.actual)}</td>
+                                <td class="px-4 py-3">${progressBadge(rate)}</td>
+                                <td class="px-4 py-3 text-zinc-400 text-xs">${r.notes || '—'}</td>
+                                ${actionCell()}
+                            </tr>`;
+                        }).join('');
+                    });
+                </script>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="sidebarOverlay" class="fixed inset-0 bg-zinc-900/20 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+    <script src="js/charts.js"></script>
+</body>
+</html>
